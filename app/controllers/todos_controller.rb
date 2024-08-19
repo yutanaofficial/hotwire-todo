@@ -19,6 +19,15 @@ class TodosController < ApplicationController
   def edit
   end
 
+  # DELETE /todos/reset
+  # destroy_all
+  def destroy_all 
+    Todo.destroy_all
+    respond_to do |format|
+      format.html { redirect_to todos_url, notice: "Todo was successfully reseted." }
+    end
+  end
+
   # POST /todos or /todos.json
   def create
     @todo = Todo.new(todo_params)
