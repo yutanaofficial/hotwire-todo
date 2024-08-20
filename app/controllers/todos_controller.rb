@@ -48,6 +48,7 @@ class TodosController < ApplicationController
   def update
     respond_to do |format|
       if @todo.update(todo_params)
+        format.turbo_stream
         format.html { redirect_to todo_url(@todo), notice: "Todo was successfully updated." }
         format.json { render :show, status: :ok, location: @todo }
       else
