@@ -1,6 +1,5 @@
-<div id="<%= dom_id todo %>">
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Name:</strong>
-    <%= todo.name %>
-  </p>
-</div>
+<li id="<%= "#{dom_id(todo)}_container" %>" class="py-2 px-4 border-b border-gray-300">
+  <%= turbo_frame_tag dom_id(todo) do %>
+    <%= link_to todo.name, edit_todo_path(todo) %>
+  <% end %>
+</li>
