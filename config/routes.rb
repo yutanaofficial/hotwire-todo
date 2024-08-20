@@ -3,6 +3,7 @@ Rails.application.routes.draw do
     collection do
       delete 'destroy_all'
     end
+    patch :change_status, on: :member
   end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

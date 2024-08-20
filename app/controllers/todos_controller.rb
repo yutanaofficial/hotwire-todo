@@ -1,6 +1,13 @@
 class TodosController < ApplicationController
-  before_action :set_todo, only: %i[ show edit update destroy ]
+  before_action :set_todo, only: %i[ show edit update destroy change_status ]
 
+  def change_status
+    @todo.update(status: todo_params[:status])
+    respond_to do |format|
+      format.turbo_stream { render turbo_stream: turbo_stream.remove("#{helpers.dom_id(@todo)}_container") }
+      format.html { redirect_to todos_path, notice: "Updated todo status." }
+    end
+  end
   # GET /todos or /todos.json
   def index
     @todos = Todo.where(status: params[:status].presence || 'incomplete')  
