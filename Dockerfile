@@ -1,23 +1,26 @@
-FROM ruby:3.3.0 as base
+# Use the official Ruby image as the base image
+FROM ruby:3.3.0
 
-RUN apt-get update -qq && apt-get install -y build-essential apt-utils libpq-dev nodejs
+# Set the working directory inside the container
+WORKDIR /app
 
-WORKDIR /docker/app
+# Install dependencies
+RUN apt-get update && \
+    apt-get install -y nodejs && \
+    gem install bundler
 
-RUN gem install bundler
+# Copy Gemfile and Gemfile.lock to the working directory
+COPY Gemfile Gemfile.lock ./
 
-COPY Gemfile* ./
-
+# Install gems
 RUN bundle install
 
-ADD . /docker/app
-
-ARG DEFAULT_PORT 3000
-
-EXPOSE ${DEFAULT_PORT}
-
+# Copy the rest of the application code
+COPY . .
 RUN rails db:migrate
-
 RUN rails assets:precompile
+# Expose port 3000 to the outside world
+EXPOSE 3000
 
-CMD [ "bundle","exec", "puma", "config.ru"] # CMD ["rails","server"] # you can also write like this.
+# Start the Rails server
+CMD ["rails", "server", "-b", "0.0.0.0"]
