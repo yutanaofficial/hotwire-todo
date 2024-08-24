@@ -10,6 +10,7 @@ class TodosController < ApplicationController
   end
   # GET /todos or /todos.json
   def index
+    Rails.logger.info 'Index view accessed'
     @todos = Todo.where(status: params[:status].presence || 'incomplete')  
   end
 
@@ -41,6 +42,7 @@ class TodosController < ApplicationController
 
     respond_to do |format|
       if @todo.save
+        Rails.logger.info 'Create new todo #'
         format.turbo_stream
         format.html { redirect_to todo_url(@todo), notice: "Todo was successfully created." }
         format.json { render :show, status: :created, location: @todo }

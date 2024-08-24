@@ -15,7 +15,10 @@ module HotwireTodo
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
     config.autoload_lib(ignore: %w(assets tasks))
-
+    # create a logger with a file as a logging target
+    config.logger = Logger.new('log/debug.log')
+    # set the minimum log level
+    config.log_level = :info
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files
