@@ -1,5 +1,5 @@
 class Todo < ApplicationRecord
-    validates :name, presence: true
+    validates_presence_of :name
     enum status: {
         incomplete: 0,
         complete: 1
