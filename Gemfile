@@ -3,7 +3,16 @@ source "https://rubygems.org"
 ruby "3.3.2"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 7.1.3", ">= 7.1.3.4"
+# gem "rails", "~> 7.1.3", ">= 7.1.3.4"
+
+# Install PostgreSQL by default
+gem 'pg', '~> 1.5', '>= 1.5.4'
+
+gem 'activestorage', require: 'active_storage'
+
+gem 'actionmailer', require: 'action_mailer'
+
+gem 'actioncable', require: 'action_cable'
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"

@@ -11,12 +11,15 @@ RUN apk add --no-cache \
     tzdata \
     gcompat \
     nodejs \
-    yarn
+    yarn \
+    postgresql-client \
+    libpq-dev
 
 # Install only necessary gems and remove extensions
 COPY Gemfile Gemfile.lock ./
 
 RUN bundle config set --local without 'development test' && \
+    bundle config --local build.pg --with-pg-config=/usr/bin/pg_config && \
     bundle install --jobs 4 --retry 3 && \
     rm -rf /usr/local/bundle/cache/*.gem && \
     find /usr/local/bundle/gems/ -name "*.c" -delete && \
@@ -41,7 +44,9 @@ WORKDIR /myapp
 RUN apk add --no-cache \
     sqlite-libs \
     tzdata \
-    gcompat
+    gcompat \
+    postgresql-client \
+    libpq-dev
 
 # Copy built artifacts from the build stage
 COPY --from=build /myapp /myapp/
