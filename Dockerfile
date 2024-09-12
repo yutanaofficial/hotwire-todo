@@ -1,43 +1,65 @@
-# Use the official Ruby image as the base image
 FROM ruby:3.3.2-alpine AS build
+WORKDIR /myapp
 
-# Set the working directory inside the container
-WORKDIR /app
+# Set environment variables
+ENV RAILS_ENV=production
 
-# Install dependencies
-RUN apk update
-RUN apk add -y --no-cache nodejs build-base
+# Install necessary packages to build gems and assets
+RUN apk add --no-cache \
+    build-base \
+    git \
+    tzdata \
+    gcompat \
+    nodejs \
+    yarn \
+    postgresql-client \
+    libpq-dev
 
-# Copy Gemfile and Gemfile.lock to the working directory
+# Install only necessary gems and remove extensions
+COPY Gemfile Gemfile.lock ./
+
+RUN bundle config set --local without 'development test' && \
+    bundle config --local build.pg --with-pg-config=/usr/bin/pg_config && \
+    bundle install --jobs 4 --retry 3 && \
+    rm -rf /usr/local/bundle/cache/*.gem && \
+    find /usr/local/bundle/gems/ -name "*.c" -delete && \
+    find /usr/local/bundle/gems/ -name "*.o" -delete
+
+
+# Copy application code
 COPY . .
 
-# Install gems
-RUN bundle config set --local path "vendor/bundle"
-RUN bundle config without development
-RUN bundle install --jobs 4 --retry 3
+# Install node modules
+RUN yarn install --frozen-lockfile
 
-ENV RAILS_ENV=production 
-ENV SECRET_KEY_BASE=thisNeedToChange 
+# Precompile assets and then remove unnecessary files
+RUN SECRET_KEY_BASE=dummy bundle exec rails assets:precompile && \
+    rm -rf node_modules tmp/cache vendor/assets test spec
 
-# Copy the rest of the application code
-RUN ./bin/rails db:migrate
-RUN ./bin/rails assets:precompile
-RUN rm -rf ./vendor/bundle/ruby/3.3.0/cache
-RUN rm -rf ./tmp/cache
 
 FROM ruby:3.3.2-alpine
+WORKDIR /myapp
 
-RUN bundle config set --local path "vendor/bundle"
-RUN bundle config without development
+# Install runtime dependencies
+RUN apk add --no-cache \
+    sqlite-libs \
+    tzdata \
+    gcompat \
+    postgresql-client \
+    libpq-dev
 
-COPY --from=build /app /app/
+# Copy built artifacts from the build stage
+COPY --from=build /myapp /myapp/
+COPY --from=build /usr/local/bundle /usr/local/bundle
 
-WORKDIR /app
+# Set environment variables
+ENV RAILS_ENV=production
 
-ENV RAILS_ENV=production 
-ENV SECRET_KEY_BASE=thisNeedToChange 
-# Expose port 3000 to the outside world
+# Run Docker entrypoint script
+ENTRYPOINT ["/myapp/bin/docker-entrypoint"]
+
+# Expose port 3000
 EXPOSE 3000
 
 # Start the Rails server
-CMD ["./bin/rails", "server", "-b", "0.0.0.0", "-e", "production"]
+CMD ["./bin/rails", "server", "-b", "0.0.0.0"]
