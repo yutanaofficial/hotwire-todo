@@ -8,6 +8,7 @@ class TodosController < ApplicationController
       format.html { redirect_to todos_path, notice: "Updated todo status." }
     end
   end
+
   # GET /todos or /todos.json
   def index
     Rails.logger.info 'Index view accessed'
@@ -25,6 +26,7 @@ class TodosController < ApplicationController
 
   # GET /todos/1/edit
   def edit
+    @todo = Todo.find(params[:id])
   end
 
   # DELETE /todos/reset
@@ -39,9 +41,9 @@ class TodosController < ApplicationController
   # POST /todos or /todos.json
   def create
     @todo = Todo.new(todo_params)
-
     respond_to do |format|
       if @todo.save
+        TodoMailer.change_status(@todo).deliver_now
         Rails.logger.info 'Create new todo #'
         format.turbo_stream
         format.html { redirect_to todo_url(@todo), notice: "Todo was successfully created." }
@@ -88,6 +90,6 @@ class TodosController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def todo_params
-      params.require(:todo).permit(:name, :status)
+      params.require(:todo).permit(:name, :status, :due_date, :subject, :email)
     end
 end

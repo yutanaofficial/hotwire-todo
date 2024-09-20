@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+    <h1>Todo Status Changed</h1>
+    <p>
+      The status of your todo item has been changed to incomplete.
+    </p>
+    <p>
+      <strong>Name:</strong> <%= @todo.name %><br>
+      <strong>Subject:</strong> <%= @todo.subject %><br>
+      <strong>Due Date:</strong> <%= @todo.due_date.strftime('%d-%m-%Y') %>
+    </p>
+  </body>
+</html>

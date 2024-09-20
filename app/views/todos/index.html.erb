@@ -1,8 +1,8 @@
 <div class="w-full">
-  <h2 class="text-6xl text-blue-600 font-thin text-center uppercase mb-8">
+  <h2 class="text-6xl text-blue-1000 font-thin text-center uppercase mb-8">
     Todos
   </h2>
-  <%= turbo_frame_tag "todos-container", class: "block max-w-md w-full mx-auto bg-zinc-50 py-8 px-4 border border-gray-200 rounded-md shadow-sm" do %>
+  <%= turbo_frame_tag "todos-container", class: "block max-w-md w-full mx-auto bg-zinc-500 py-8 px-4 border border-gray-200 rounded-md shadow-sm" do %>
     <div class="border-b border-zinc-100 w-full">
       <ul class="flex space-x-2 justify-center">
         <li>
@@ -23,6 +23,7 @@
     <% unless params[:status] == "complete" %>
       <div class="py-2 px-4">
         <%= render "form", todo: Todo.new %>
+        
       </div>
     <% end %>
     <ul id="todos-list">
